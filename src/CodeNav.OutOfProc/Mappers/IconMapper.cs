@@ -31,6 +31,10 @@ public static class IconMapper
             CodeItemKindEnum.Switch => "FlowSwitch",
             CodeItemKindEnum.SwitchSection => "FlowDecision",
             CodeItemKindEnum.Variable => $"Field{accessString}",
+            CodeItemKindEnum.Procedure => "StoredProcedure",
+            CodeItemKindEnum.Function => "ScalarFunction",
+            CodeItemKindEnum.View => "View",
+            CodeItemKindEnum.Table => "Table",
             _ => $"Property{accessString}",
         };
 

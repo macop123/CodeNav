@@ -76,4 +76,16 @@ public enum CodeItemKindEnum
 
     [EnumOrder(12)]
     Variable,
+
+    [EnumOrder(23)]
+    Procedure,
+
+    [EnumOrder(24)]
+    Function,
+
+    [EnumOrder(25)]
+    View,
+
+    [EnumOrder(26)]
+    Table,
 }

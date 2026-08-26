@@ -258,6 +258,7 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
         CodeDocumentService.GlobalSettings.EnableCSharp = CodeDocumentService.SettingsDialogData.EnableCSharp;
         CodeDocumentService.GlobalSettings.EnableVisualBasic = CodeDocumentService.SettingsDialogData.EnableVisualBasic;
         CodeDocumentService.GlobalSettings.EnableTypeScript = CodeDocumentService.SettingsDialogData.EnableTypeScript;
+        CodeDocumentService.GlobalSettings.EnableSql = CodeDocumentService.SettingsDialogData.EnableSql;
 
         await SettingsHelper.SaveGlobalSettings(CodeDocumentService);
 

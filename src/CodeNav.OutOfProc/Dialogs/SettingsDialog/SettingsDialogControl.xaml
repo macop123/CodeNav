@@ -58,6 +58,10 @@
                 <CheckBox IsChecked="{Binding EnableTypeScript, Mode=TwoWay}">
                     TypeScript
                 </CheckBox>
+
+                <CheckBox IsChecked="{Binding EnableSql, Mode=TwoWay}">
+                    SQL
+                </CheckBox>
             </StackPanel>
         </GroupBox>
 

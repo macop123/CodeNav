@@ -11,6 +11,7 @@ using System.Windows;
 using CSharpDocumentMapper = CodeNav.OutOfProc.Languages.CSharp.Mappers.DocumentMapper;
 using VisualBasicDocumentMapper = CodeNav.OutOfProc.Languages.VisualBasic.Mappers.DocumentMapper;
 using TypeScriptDocumentMapper = CodeNav.OutOfProc.Languages.TypeScript.Mappers.DocumentMapper;
+using SqlDocumentMapper = CodeNav.OutOfProc.Languages.Sql.Mappers.DocumentMapper;
 
 namespace CodeNav.OutOfProc.Services;
 
@@ -25,6 +26,7 @@ public class CodeDocumentService
         new CSharpDocumentMapper(),
         new VisualBasicDocumentMapper(),
         new TypeScriptDocumentMapper(),
+        new SqlDocumentMapper(),
     ];
 
     public CodeDocumentService(
@@ -220,6 +222,7 @@ public class CodeDocumentService
                 EnableCSharp = GlobalSettings.EnableCSharp,
                 EnableVisualBasic = GlobalSettings.EnableVisualBasic,
                 EnableTypeScript = GlobalSettings.EnableTypeScript,
+                EnableSql = GlobalSettings.EnableSql,
             };
 
             var filterRules = GlobalSettings
@@ -264,7 +267,12 @@ public class CodeDocumentService
             }
 
             // Update the view model with the filter rules
-            VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel, CodeDocumentViewModel.CodeItems, CodeDocumentViewModel.FilterRules);
+            VisibilityHelper.SetCodeItemVisibility(
+                CodeDocumentViewModel,
+                CodeDocumentViewModel.CodeItems,
+                CodeDocumentViewModel.FilterRules,
+                CodeDocumentViewModel.FilterText,
+                CodeDocumentViewModel.BookmarkIds);
 
             // Apply filter rules
             FilterRuleHelper.ApplyFilterRules(CodeDocumentViewModel, CodeDocumentViewModel.CodeItems, CodeDocumentViewModel.FilterRules);

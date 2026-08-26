@@ -242,7 +242,7 @@ public class TextViewService
             : null;
 
     /// <summary>
-    /// Check if the given text view is in a supported language editor (C#, VB, TypeScript)
+    /// Check if the given text view is in a supported language editor (C#, VB, TypeScript, SQL)
     /// </summary>
     /// <param name="textView">WPF Text View</param>
     /// <returns></returns>
@@ -255,6 +255,7 @@ public class TextViewService
 
         var language = textView.TextBuffer.ContentType.TypeName;
 
-        return language == "CSharp" || language == "Basic" || language == "TypeScript";
+        return language == "CSharp" || language == "Basic" || language == "TypeScript" ||
+               language == "SQL" || language == "SQL Server Tools";
     }
 }

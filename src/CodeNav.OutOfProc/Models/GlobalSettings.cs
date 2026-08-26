@@ -53,6 +53,8 @@ public class GlobalSettings
 
     public bool EnableTypeScript { get; set; } = false;
 
+    public bool EnableSql { get; set; } = false;
+
     /// <summary>
     /// Main toolbar - Setting to store the selected sort order for code items
     /// </summary>

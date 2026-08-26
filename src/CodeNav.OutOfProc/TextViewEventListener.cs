@@ -32,7 +32,7 @@ internal class TextViewEventListener(
     {
         AppliesTo =
         [
-            DocumentFilter.FromGlobPattern("**/*.{cs,vb}", true),
+            DocumentFilter.FromGlobPattern("**/*.{cs,vb,sql}", true),
         ],
     };
 
