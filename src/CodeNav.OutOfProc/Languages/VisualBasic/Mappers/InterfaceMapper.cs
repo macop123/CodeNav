@@ -48,6 +48,13 @@ public static class InterfaceMapper
                 semanticModel,
                 codeDocumentViewModel))
             {
+                if (memberItem == null)
+                {
+                    continue;
+                }
+
+                memberItem.AdditionalKinds.Add(CodeItemKindEnum.InterfaceMember);
+
                 if (RegionMapper.AddToRegion(regions, memberItem))
                 {
                     continue;

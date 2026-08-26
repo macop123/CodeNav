@@ -168,7 +168,15 @@ public static class InterfaceMapper
         foreach (var interfaceMember in member.Members)
         {
             var memberItem = DocumentMapper.MapMember(interfaceMember, tree, semanticModel, codeDocumentViewModel);
-            if (memberItem != null && !RegionMapper.AddToRegion(regions, memberItem))
+
+            if (memberItem == null)
+            {
+                continue;
+            }
+
+            memberItem.AdditionalKinds.Add(CodeItemKindEnum.InterfaceMember);
+
+            if (!RegionMapper.AddToRegion(regions, memberItem))
             {
                 codeItem.Members.Add(memberItem);
             }
