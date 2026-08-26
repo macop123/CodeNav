@@ -51,6 +51,8 @@ public class GlobalSettings
 
     public bool EnableVisualBasic { get; set; } = false;
 
+    public bool EnableTypeScript { get; set; } = false;
+
     /// <summary>
     /// Main toolbar - Setting to store the selected sort order for code items
     /// </summary>

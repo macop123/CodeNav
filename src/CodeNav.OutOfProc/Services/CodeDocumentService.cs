@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.Extensibility.UI;
 using System.Windows;
 using CSharpDocumentMapper = CodeNav.OutOfProc.Languages.CSharp.Mappers.DocumentMapper;
 using VisualBasicDocumentMapper = CodeNav.OutOfProc.Languages.VisualBasic.Mappers.DocumentMapper;
+using TypeScriptDocumentMapper = CodeNav.OutOfProc.Languages.TypeScript.Mappers.DocumentMapper;
 
 namespace CodeNav.OutOfProc.Services;
 
@@ -23,6 +24,7 @@ public class CodeDocumentService
     [
         new CSharpDocumentMapper(),
         new VisualBasicDocumentMapper(),
+        new TypeScriptDocumentMapper(),
     ];
 
     public CodeDocumentService(
@@ -215,6 +217,7 @@ public class CodeDocumentService
                 UseCompactMode = GlobalSettings.UseCompactMode,
                 EnableCSharp = GlobalSettings.EnableCSharp,
                 EnableVisualBasic = GlobalSettings.EnableVisualBasic,
+                EnableTypeScript = GlobalSettings.EnableTypeScript,
             };
 
             var filterRules = GlobalSettings

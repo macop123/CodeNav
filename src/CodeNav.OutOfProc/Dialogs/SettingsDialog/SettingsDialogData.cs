@@ -65,4 +65,10 @@ public class SettingsDialogData
     /// </summary>
     [DataMember]
     public bool EnableVisualBasic { get; set; } = false;
+
+    /// <summary>
+    /// Setting which languages are enabled for CodeNav.
+    /// </summary>
+    [DataMember]
+    public bool EnableTypeScript { get; set; } = false;
 }

@@ -1,0 +1,152 @@
+﻿using CodeNav.OutOfProc.Constants;
+using CodeNav.OutOfProc.Interfaces;
+using CodeNav.OutOfProc.Languages.TypeScript.Parsing;
+using CodeNav.OutOfProc.Mappers;
+using CodeNav.OutOfProc.ViewModels;
+
+namespace CodeNav.OutOfProc.Languages.TypeScript.Mappers;
+
+public static class CodeItemMapper
+{
+    public static List<CodeItem> MapNodes(
+        IEnumerable<TypeScriptNode> nodes,
+        CodeDocumentViewModel codeDocumentViewModel,
+        string parentFullName,
+        bool isMember)
+        => [.. nodes
+            .Select(node => MapNode(node, codeDocumentViewModel, parentFullName, isMember))
+            .Where(codeItem => codeItem != null)
+            .Cast<CodeItem>()];
+
+    public static CodeItem? MapNode(
+        TypeScriptNode node,
+        CodeDocumentViewModel codeDocumentViewModel,
+        string parentFullName,
+        bool isMember)
+        => node.Kind switch
+        {
+            CodeItemKindEnum.Namespace => MapContainer<CodeNamespaceItem>(node, codeDocumentViewModel, parentFullName),
+            CodeItemKindEnum.Class => MapContainer<CodeClassItem>(node, codeDocumentViewModel, parentFullName, includeHeritage: true),
+            CodeItemKindEnum.Interface => MapContainer<CodeInterfaceItem>(node, codeDocumentViewModel, parentFullName, includeHeritage: true),
+            CodeItemKindEnum.Region => MapRegion(node, codeDocumentViewModel, parentFullName, isMember),
+            CodeItemKindEnum.Enum => MapEnum(node, codeDocumentViewModel, parentFullName),
+            CodeItemKindEnum.EnumMember => MapEnumMember(node, codeDocumentViewModel, parentFullName),
+            CodeItemKindEnum.Constructor => MapFunction(node, codeDocumentViewModel, parentFullName, CodeItemKindEnum.Constructor, isMember: true),
+            CodeItemKindEnum.Method => MapFunction(node, codeDocumentViewModel, parentFullName, CodeItemKindEnum.Method, isMember),
+            CodeItemKindEnum.Property => MapProperty(node, codeDocumentViewModel, parentFullName),
+            CodeItemKindEnum.Variable or CodeItemKindEnum.Constant => MapVariable(node, codeDocumentViewModel, parentFullName),
+            _ => null,
+        };
+
+    private static T MapContainer<T>(
+        TypeScriptNode node,
+        CodeDocumentViewModel codeDocumentViewModel,
+        string parentFullName,
+        bool includeHeritage = false) where T : CodeItem, IMembers, new()
+    {
+        var codeItem = BaseMapper.MapBase<T>(node, codeDocumentViewModel, parentFullName, isMember: false);
+        codeItem.Kind = node.Kind;
+
+        if (codeItem is CodeClassItem classItem)
+        {
+            classItem.Parameters = includeHeritage ? node.Heritage : string.Empty;
+        }
+
+        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
+        codeItem.Tooltip = TooltipMapper.Map(codeItem.Access, string.Empty, codeItem.Name,
+            codeItem is CodeClassItem heritageItem ? heritageItem.Parameters : string.Empty);
+
+        var isChildMember = node.Kind is CodeItemKindEnum.Class or CodeItemKindEnum.Interface;
+        codeItem.Members = MapNodes(node.Members, codeDocumentViewModel, codeItem.FullName, isChildMember);
+
+        return codeItem;
+    }
+
+    private static CodeRegionItem MapRegion(
+        TypeScriptNode node,
+        CodeDocumentViewModel codeDocumentViewModel,
+        string parentFullName,
+        bool isMember)
+    {
+        // Regions are transparent with respect to the qualified name and member-ness of their
+        // contents: a region inside a class still contains class members, and one inside a
+        // namespace still contains namespace members.
+        var codeItem = new CodeRegionItem
+        {
+            Name = node.Name,
+            FullName = node.Name,
+            Id = node.Name,
+            Tooltip = node.Name,
+            Kind = CodeItemKindEnum.Region,
+            Span = node.Span,
+            IdentifierSpan = node.IdentifierSpan,
+            OutlineSpan = node.Span,
+            Moniker = IconMapper.MapMoniker(CodeItemKindEnum.Region, CodeItemAccessEnum.Unknown),
+            CodeDocumentViewModel = codeDocumentViewModel,
+        };
+
+        codeItem.Members = MapNodes(node.Members, codeDocumentViewModel, parentFullName, isMember);
+
+        return codeItem;
+    }
+
+    private static CodeClassItem MapEnum(TypeScriptNode node, CodeDocumentViewModel codeDocumentViewModel, string parentFullName)
+    {
+        var codeItem = BaseMapper.MapBase<CodeClassItem>(node, codeDocumentViewModel, parentFullName, isMember: false);
+        codeItem.Kind = CodeItemKindEnum.Enum;
+        codeItem.Parameters = node.Type;
+        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
+        codeItem.Tooltip = TooltipMapper.Map(codeItem.Access, string.Empty, codeItem.Name, codeItem.Parameters);
+        codeItem.Members = MapNodes(node.Members, codeDocumentViewModel, codeItem.FullName, isMember: false);
+
+        return codeItem;
+    }
+
+    private static CodeItem MapEnumMember(TypeScriptNode node, CodeDocumentViewModel codeDocumentViewModel, string parentFullName)
+    {
+        var codeItem = BaseMapper.MapBase<CodeItem>(node, codeDocumentViewModel, parentFullName, isMember: false);
+        codeItem.Kind = CodeItemKindEnum.EnumMember;
+        codeItem.Access = CodeItemAccessEnum.Public;
+        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
+
+        return codeItem;
+    }
+
+    private static CodeFunctionItem MapFunction(
+        TypeScriptNode node,
+        CodeDocumentViewModel codeDocumentViewModel,
+        string parentFullName,
+        CodeItemKindEnum kind,
+        bool isMember)
+    {
+        var codeItem = BaseMapper.MapBase<CodeFunctionItem>(node, codeDocumentViewModel, parentFullName, isMember);
+        codeItem.Kind = kind;
+        codeItem.Parameters = node.Parameters;
+        codeItem.ReturnType = node.Type;
+        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
+        codeItem.Tooltip = TooltipMapper.Map(codeItem.Access, codeItem.ReturnType, codeItem.Name, codeItem.Parameters);
+
+        return codeItem;
+    }
+
+    private static CodePropertyItem MapProperty(TypeScriptNode node, CodeDocumentViewModel codeDocumentViewModel, string parentFullName)
+    {
+        var codeItem = BaseMapper.MapBase<CodePropertyItem>(node, codeDocumentViewModel, parentFullName, isMember: true);
+        codeItem.Kind = CodeItemKindEnum.Property;
+        codeItem.ReturnType = node.Type;
+        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
+        codeItem.Tooltip = TooltipMapper.Map(codeItem.Access, codeItem.ReturnType, codeItem.Name, string.Empty);
+
+        return codeItem;
+    }
+
+    private static CodeItem MapVariable(TypeScriptNode node, CodeDocumentViewModel codeDocumentViewModel, string parentFullName)
+    {
+        var codeItem = BaseMapper.MapBase<CodeItem>(node, codeDocumentViewModel, parentFullName, isMember: false);
+        codeItem.Kind = node.Kind;
+        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
+        codeItem.Tooltip = TooltipMapper.Map(codeItem.Access, node.Type, codeItem.Name, string.Empty);
+
+        return codeItem;
+    }
+}

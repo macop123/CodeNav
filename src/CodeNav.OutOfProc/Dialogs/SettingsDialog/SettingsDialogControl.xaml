@@ -54,6 +54,10 @@
                 <CheckBox IsChecked="{Binding EnableVisualBasic, Mode=TwoWay}">
                     Visual Basic
                 </CheckBox>
+
+                <CheckBox IsChecked="{Binding EnableTypeScript, Mode=TwoWay}">
+                    TypeScript
+                </CheckBox>
             </StackPanel>
         </GroupBox>
 

@@ -257,6 +257,7 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
         CodeDocumentService.GlobalSettings.UseCompactMode = CodeDocumentService.SettingsDialogData.UseCompactMode;
         CodeDocumentService.GlobalSettings.EnableCSharp = CodeDocumentService.SettingsDialogData.EnableCSharp;
         CodeDocumentService.GlobalSettings.EnableVisualBasic = CodeDocumentService.SettingsDialogData.EnableVisualBasic;
+        CodeDocumentService.GlobalSettings.EnableTypeScript = CodeDocumentService.SettingsDialogData.EnableTypeScript;
 
         await SettingsHelper.SaveGlobalSettings(CodeDocumentService);
 

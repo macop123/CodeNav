@@ -34,6 +34,10 @@ Enable or disable support for C# code items in CodeNav
 
 Enable or disable support for Visual Basic code items in CodeNav
 
+**TypeScript**
+
+Enable or disable support for TypeScript code items in CodeNav
+
 ## Performance
 
 **Update CodeNav while typing**
